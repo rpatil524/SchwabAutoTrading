@@ -20,14 +20,14 @@ ACCOUNT_TRADING_STRATEGY_MAP = {
     IRA_ACCOUNT_NUMBER: "THE_WHEEL",
 }
 
-TICKERS_OF_IV_50_70 = ["AFRM", "AI", "BHC", "BITO", "CAR", "CELH", "CHWY", "DELL", "FSLR",
-                       "HOOD", "JBLU", "LYFT", "MDB", "MRNA", "ONON", "ROKU", "SLB", "SNAP", "SOFI",
-                       "SPOT", "TSLA", "U", "W", "Z"]
-TICKERS_OF_IV_70_100 = ["RDDT", "COIN", "UPST", "SOUN", "TDOC", "XPEV", "ARDX", "SMCI", "ARM", "HIMS",
+TICKERS_OF_IV_50_70 = ["AFRM", "AI", "BHC", "BITO", "CAR", "CHWY", "DELL", "FSLR",
+                       "HOOD", "JBLU", "MDB", "MRNA", "ROKU", "SNAP", "SOFI",
+                       "SPOT", "TSLA", "U", "W"]
+TICKERS_OF_IV_70_100 = ["RDDT", "COIN", "UPST", "SOUN", "TDOC", "XPEV", "SMCI", "ARM", "HIMS",
                         "ACMR", "MPW", "ZIM", "BILI", "SEDG", "RUN", "SOXL", "AG", "RIVN", "RIOT",
                         "PCT", "VKTX", "IONQ", "MARA", "HLF", "ENVX"]
-TICKERS_OF_IV_100_and_above = ["IBRX", "CLSK",
-                               "CIFR", "NVAX", "IREN", "BBIO", "OKLO", "HE"]
+TICKERS_OF_IV_100_and_above = ["IBRX", "CLSK", "CIFR", "NVAX", "IREN", "BBIO", "OKLO",
+                               "HE"]
 TICKERS_FOR_THE_WHEEL = TICKERS_OF_IV_50_70 + \
     TICKERS_OF_IV_70_100 + TICKERS_OF_IV_100_and_above
 

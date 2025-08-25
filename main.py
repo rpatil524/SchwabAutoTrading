@@ -1,14 +1,7 @@
-from datetime import datetime, timedelta
-import json
-
 from configs.config import TRUST_ACCOUNT_NUMBER, TICKERS_OF_IV_50_70, TICKERS_OF_IV_70_100, TICKERS_OF_IV_100_and_above
-from configs.utils import TradeReason
-from trading.earnings_calendar import EarningsCalendar
 from trading.stock_screener import StockScreener
 from trading.theta_analyzer import ThetaAnalyzer
 from trading.trade_options import TradeOptions
-from options.options import Options, OptionInstruction, OptionType
-from options.stocks import Stocks
 
 
 if __name__ == '__main__':
@@ -22,16 +15,16 @@ if __name__ == '__main__':
     tickers_to_sell_option_dict = stock_screener.run(day_change=5, week_change=10, month_change=20)
     trade_options.sto_given_tickers(TRUST_ACCOUNT_NUMBER, tickers_to_sell_option_dict)
 
-    # Step 3: Get earning tickers for a specific date and sell options for the earning tickers that are in the current positions;
-    total_tickers = trade_options.get_existing_tickers()
-    total_tickers = total_tickers.union(TICKERS_OF_IV_50_70 + TICKERS_OF_IV_70_100 + TICKERS_OF_IV_100_and_above)
-    EarningsCalendar.generate_earnings_calendar_from_yahoo_finance(total_tickers)
-    earnings_calendar = EarningsCalendar()
-    earning_tickers = earnings_calendar.get_earning_tickers(datetime.now())
-    print("Earnings tickers", earning_tickers)
-    earning_tickers = trade_options.constrain_to_current_positions(TRUST_ACCOUNT_NUMBER, earning_tickers)
-    print("We only sell earning tickers that are in current positions", earning_tickers)
-    trade_options.sto_given_tickers(TRUST_ACCOUNT_NUMBER, {"put": earning_tickers}, trade_reason=TradeReason.STO_FROM_EARNINGS)
+    # # Step 3: Get earning tickers for a specific date and sell options for the earning tickers that are in the current positions;
+    # total_tickers = trade_options.get_existing_tickers()
+    # total_tickers = total_tickers.union(TICKERS_OF_IV_50_70 + TICKERS_OF_IV_70_100 + TICKERS_OF_IV_100_and_above)
+    # EarningsCalendar.generate_earnings_calendar_from_yahoo_finance(total_tickers)
+    # earnings_calendar = EarningsCalendar()
+    # earning_tickers = earnings_calendar.get_earning_tickers(datetime.now())
+    # print("Earnings tickers", earning_tickers)
+    # earning_tickers = trade_options.constrain_to_current_positions(TRUST_ACCOUNT_NUMBER, earning_tickers)
+    # print("We only sell earning tickers that are in current positions", earning_tickers)
+    # trade_options.sto_given_tickers(TRUST_ACCOUNT_NUMBER, {"put": earning_tickers}, trade_reason=TradeReason.STO_FROM_EARNINGS)
 
     trade_options.display_all_orders()
 

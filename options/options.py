@@ -30,12 +30,13 @@ class Options(object):
         # option premium at the time of SELL TO OPEN
         self.option_cost = position_json.get('averagePrice')
         self.short_quantity = position_json.get('shortQuantity')
-        # Normally I only short options, so I make sure the quantity is positive;
-        assert self.short_quantity > 0
         # current market price of the option
-        self.option_market_price = position_json.get(
-            'marketValue')/100/-self.short_quantity
-        self.profit = self.option_cost - self.option_market_price
+        self.option_market_price = 0
+        self.profit = 0
+        if self.short_quantity > 0:
+            self.option_market_price = position_json.get(
+                'marketValue')/100/-self.short_quantity
+            self.profit = self.option_cost - self.option_market_price
         # Where do we get the stock price? We can get it from the Schwab API;
         self.stock_price = 0
         # How do we get the Greeks of an option? We can get it from the Schwab API;

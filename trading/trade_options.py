@@ -367,23 +367,28 @@ class TradeOptions:
             stock_quote = self.client.quote(ticker).json()
             stock = Stocks.initialize_from_quote_json(ticker, stock_quote)
             print(f"*** sell 1 cash-secured puts for {ticker}")
-            candidate, sto_order = Options.sto_an_option_order(
-                ticker=ticker,
-                option_type=OptionType.PUT,
-                option_chains=stock.get_option_chains(self.client),
-                quantity=1,
-                min_expiration_weeks=sto_trade_setting.get(
-                    "min_expiration_weeks"),
-                min_delta=sto_trade_setting.get("min_delta"),
-                max_delta=sto_trade_setting.get("max_delta"),
-                min_premium_percentage=sto_trade_setting.get(
-                    "min_premium_percentage")
-            )
-            # It's possible that we can't find a suitable option to sell to open, so we need to check if sto_order is None;
-            if not sto_order:
-                print(
-                    f"****** Can't find a suitable option candidate to sell to open for {ticker}, skip.")
+            try:
+                candidate, sto_order = Options.sto_an_option_order(
+                    ticker=ticker,
+                    option_type=OptionType.PUT,
+                    option_chains=stock.get_option_chains(self.client),
+                    quantity=1,
+                    min_expiration_weeks=sto_trade_setting.get(
+                        "min_expiration_weeks"),
+                    min_delta=sto_trade_setting.get("min_delta"),
+                    max_delta=sto_trade_setting.get("max_delta"),
+                    min_premium_percentage=sto_trade_setting.get(
+                        "min_premium_percentage")
+                )
+                # It's possible that we can't find a suitable option to sell to open, so we need to check if sto_order is None;
+                if not sto_order:
+                    print(
+                        f"****** Can't find a suitable option candidate to sell to open for {ticker}, skip.")
+                    continue
+            except Exception as e:
+                print(f"Failed at sell cash-secured puts for {ticker}, error: {e}")
                 continue
+            
             strike_price = candidate.get('strike_price')
             available_balance -= strike_price * 100
             if available_balance < 0:
