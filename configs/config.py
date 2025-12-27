@@ -1,10 +1,10 @@
 class Config(object):
     APP_KEY = 'add_you_own_key_here'
     APP_SECRET = 'add_you_own_secret_here'
-    # This is a token for getting earnings calendar from apicalls.io
-    # It's optional if the earning tickers are in data/earnings_calendar.json
-    # already or you don't do earnings trade;
-    API_CALLS_TOKEN = 'add_you_own_key_here'
+    # # This is a token for getting earnings calendar from apicalls.io
+    # # It's optional if the earning tickers are in data/earnings_calendar.json
+    # # already or you don't do earnings trade;
+    # API_CALLS_TOKEN = 'add_you_own_key_here'
 
 
 TRUST_ACCOUNT_NUMBER = 'add_your_account_number_here'
