@@ -1,4 +1,4 @@
-schwabdev
+schwabdev==3.0.0
 requests
 websockets 
 tk

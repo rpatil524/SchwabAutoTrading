@@ -23,10 +23,8 @@ ORDER_COLUMNS = [
 class TradeOptions:
     def __init__(self) -> None:
         self.client = schwabdev.Client(
-            Config.APP_KEY, Config.APP_SECRET, "https://127.0.0.1", update_tokens_auto=True)
-        # update tokens automatically (except refresh token)
-        # self.client.update_tokens_auto()
-        self.linked_accounts = self.client.account_linked().json()
+            Config.APP_KEY, Config.APP_SECRET, "https://127.0.0.1")
+        self.linked_accounts = self.client.linked_accounts().json()
         self.account_number_to_hash = {}
         # We keep track of all the put options we sold to open; so we don't sell more than 3 puts;
         self.position_tracker = {}
@@ -71,7 +69,7 @@ class TradeOptions:
             print("****** Order not placed.")
             return
         # place the order
-        resp = self.client.order_place(account_hash, order)
+        resp = self.client.place_order(account_hash, order)
         print(f"****** Response code: {resp}")
         # get the order ID - if order is immediately filled then the id might not be returned
         order_id = resp.headers.get('location', '/').split('/')[-1]
@@ -100,17 +98,20 @@ class TradeOptions:
             # For the trust account, we close the winning options,
             # and roll out the losing options because we have no scash in the account;
             print(f"\n\n\nProcessing account {account_number}")
-            if ACCOUNT_TRADING_STRATEGY_MAP.get(account_number) == "THE_WHEEL":
-                self.process_winning_trades(
-                    account_number, self.options_by_account[account_number], self.ticker_to_stock_map_by_account[account_number])
-                # Now we sell cash-secured puts and covered calls;
-                self.selL_cc_and_csp(
-                    account_number, self.ticker_to_stock_map_by_account[account_number])
-            else:
-                self.process_winning_trades(
-                    account_number, self.options_by_account[account_number], self.ticker_to_stock_map_by_account[account_number])
-                self.process_losing_trades(
-                    account_number, self.options_by_account[account_number], self.ticker_to_stock_map_by_account[account_number])
+            try:
+                if ACCOUNT_TRADING_STRATEGY_MAP.get(account_number) == "THE_WHEEL":
+                    self.process_winning_trades(
+                        account_number, self.options_by_account[account_number], self.ticker_to_stock_map_by_account[account_number])
+                    # Now we sell cash-secured puts and covered calls;
+                    self.selL_cc_and_csp(
+                        account_number, self.ticker_to_stock_map_by_account[account_number])
+                else:
+                    self.process_winning_trades(
+                        account_number, self.options_by_account[account_number], self.ticker_to_stock_map_by_account[account_number])
+                    self.process_losing_trades(
+                        account_number, self.options_by_account[account_number], self.ticker_to_stock_map_by_account[account_number])
+            except Exception as e:
+                print(f"Errors happended in account {account_number}")
         return
 
     def constrain_to_current_positions(self, account_number, ticker_list) -> list[str]:
@@ -431,12 +432,15 @@ class TradeOptions:
 
         # Afterwards, we add the stock price to the option positions;
         for option in option_positions:
-            stock = ticker_to_stock_map.get(option.ticker)
-            # If the stock is not in the map, we need to get the stock price from the Schwab API;
-            if not stock:
-                stock_quote = self.client.quote(option.ticker).json()
-                stock = Stocks.initialize_from_quote_json(
-                    option.ticker, stock_quote)
-            option.set_stock_price(stock.stock_price)
-            ticker_to_stock_map[option.ticker] = stock
+            try:
+                stock = ticker_to_stock_map.get(option.ticker)
+                # If the stock is not in the map, we need to get the stock price from the Schwab API;
+                if not stock:
+                    stock_quote = self.client.quote(option.ticker).json()
+                    stock = Stocks.initialize_from_quote_json(
+                        option.ticker, stock_quote)
+                option.set_stock_price(stock.stock_price)
+                ticker_to_stock_map[option.ticker] = stock
+            except Exception:
+                print(f"{option.ticker} has some data error") 
         return option_positions, ticker_to_stock_map
